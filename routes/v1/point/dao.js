@@ -5,25 +5,26 @@ const dayjs = require('dayjs');
 
 exports.list = (req, res) => {
   const { start_date, end_date, page, limit } = req.query;
+  console.log(req.query);
 
   const startDate = dayjs(start_date)
-  .set('hour', 0)
-  .set('minute', 0)
-  .set('second', 0)
-  .format('YYYY-MM-DD HH:mm:ss');
+    .set('hour', 0)
+    .set('minute', 0)
+    .set('second', 0)
+    .format('YYYY-MM-DD HH:mm:ss');
 
   const endDate = dayjs(end_date)
-  .set('hour', 23)
-  .set('minute', 59)
-  .set('second', 59)
-  .format('YYYY-MM-DD HH:mm:ss');
-
+    .set('hour', 23)
+    .set('minute', 59)
+    .set('second', 59)
+    .format('YYYY-MM-DD HH:mm:ss');
 
   const pageValue = page ? parseInt(page) : 1;
   const pageSizeValue = limit ? parseInt(limit) : 1000;
   const offset = (pageValue - 1) * pageSizeValue;
 
-  let baseWhere = `WHERE CP.created_at BETWEEN '2020-01-01 00:00:00' AND '2025-02-28 23:59'`;
+  // where 조건
+  let baseWhere = `WHERE 1=1`;
   const queryValues = [];
 
   if (startDate) {
@@ -31,11 +32,11 @@ exports.list = (req, res) => {
     queryValues.push(startDate);
   }
   if (endDate) {
-    baseWhere += ` AND CP.created_at < ? + INTERVAL 1 DAY`;
+    baseWhere += ` AND CP.created_at <= ?`;
     queryValues.push(endDate);
   }
 
-  // Count 쿼리
+  // Count 쿼리 (수정됨)
   const sqlCount = `
     SELECT COUNT(*) AS totalCount
     FROM tbl_customer_point AS CP
